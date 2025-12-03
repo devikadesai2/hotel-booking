@@ -1,7 +1,0 @@
-@tailwind base; @tailwind components; @tailwind utilities;
-.hero { @apply bg-blue-700 text-white py-12 px-6 rounded-b-lg; }
-.search-card { @apply bg-orange-400 p-4 rounded shadow-lg -mt-8 max-w-4xl mx-auto; }
-.hotel-card { @apply border p-4 rounded bg-white shadow-sm; }
-.btn { @apply px-4 py-2 rounded text-white font-semibold; }
-.btn-primary { @apply bg-blue-600 hover:bg-blue-700; }
-.btn-danger { @apply bg-red-500 hover:bg-red-600; }
