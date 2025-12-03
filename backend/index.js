@@ -6,13 +6,24 @@ require("dotenv").config();
 
 const app = express();
 
-// Allow frontend on Vite dev server
+// ✅ Allow both Localhost (dev) + Vercel (prod)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://hotel-booking-fawn-pi.vercel.app",  // <-- your real Vercel domain
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 // Debug log
@@ -21,11 +32,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Mongo connection
+// Mongo connection (Render won't crash even if DB fails)
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-  console.error("MONGO_URI not set in environment");
-  // process.exit(1);  // don't exit on Render
+  console.error("MONGO_URI not set in Render Environment Variables");
 }
 
 mongoose
@@ -33,9 +43,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
-    // process.exit(1);  // comment this too for now
   });
-
 
 // Routes
 const authRouter = require("./routes/auth");
@@ -50,10 +58,11 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-// generic 404 for API
+// 404 handler
 app.use("/api", (req, res) =>
   res.status(404).json({ msg: "API endpoint not found" })
 );
 
+// ✅ Render will assign its own internal port, but app runs on 5000 externally
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
