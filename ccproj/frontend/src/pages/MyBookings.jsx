@@ -1,0 +1,3 @@
+import React, { useEffect, useState } from 'react'
+import api from '../api/client'
+export default function MyBookings(){ const [bookings,setBookings]=useState([]); useEffect(()=>{ api.get('/bookings').then(r=>setBookings(r.data)).catch(console.error) },[]); return (<div><h2 className='text-2xl font-bold mb-4'>My Bookings</h2>{bookings.map(b=>(<div key={b._id} className='border p-3 mb-2 rounded'><div className='font-semibold'>{b.hotel?.title}</div><div>From: {new Date(b.from).toLocaleDateString()} To: {new Date(b.to).toLocaleDateString()}</div><div>Total: ₹{b.totalPrice}</div></div>))}</div>) }
